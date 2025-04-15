@@ -1,4 +1,4 @@
-package pedroleonez.fornello.api.dtos;
+package pedroleonez.fornello.api.dtos.input.product;
 
 import java.math.BigDecimal;
 

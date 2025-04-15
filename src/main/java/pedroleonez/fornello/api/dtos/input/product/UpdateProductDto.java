@@ -1,4 +1,4 @@
-package pedroleonez.fornello.api.dtos;
+package pedroleonez.fornello.api.dtos.input.product;
 
 public record UpdateProductDto(
 
