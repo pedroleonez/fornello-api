@@ -1,7 +1,11 @@
 package pedroleonez.fornello.api.services;
 
 import org.springframework.stereotype.Service;
-import pedroleonez.fornello.api.dtos.*;
+import pedroleonez.fornello.api.dtos.input.product.CreateProductDto;
+import pedroleonez.fornello.api.dtos.input.product.CreateProductVariationDto;
+import pedroleonez.fornello.api.dtos.input.product.UpdateProductDto;
+import pedroleonez.fornello.api.dtos.input.product.UpdateProductVariationDto;
+import pedroleonez.fornello.api.dtos.output.product.RecoveryProductDto;
 import pedroleonez.fornello.api.entities.Product;
 import pedroleonez.fornello.api.entities.ProductVariation;
 import pedroleonez.fornello.api.enums.Category;
