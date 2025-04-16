@@ -7,16 +7,16 @@ import java.math.BigDecimal;
 
 public record CreateProductVariationDto(
 
-        @NotBlank
+        @NotBlank(message = "{not.blank.message}")
         String sizeName,
 
-        @NotBlank
+        @NotBlank(message = "{not.blank.message}")
         String description,
 
-        @NotNull
+        @NotNull(message = "{not.null.message}")
         BigDecimal price,
 
-        @NotNull
+        @NotNull(message = "{not.null.message}")
         Boolean available
 ) {
 }

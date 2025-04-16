@@ -8,19 +8,19 @@ import java.util.List;
 
 public record CreateProductDto(
 
-        @NotBlank
+        @NotBlank(message = "{not.blank.message}")
         String name,
 
-        @NotBlank
+        @NotBlank(message = "{not.blank.message}")
         String description,
 
-        @NotBlank
+        @NotBlank(message = "{not.blank.message}")
         String category,
 
-        @NotEmpty
+        @NotEmpty(message = "{not.empty.message}")
         List<CreateProductVariationDto> productVariations,
 
-        @NotNull
+        @NotNull(message = "{not.null.message}")
         Boolean available
 ) {
 }

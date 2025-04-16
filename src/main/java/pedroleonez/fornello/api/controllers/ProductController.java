@@ -1,5 +1,6 @@
 package pedroleonez.fornello.api.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +24,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<RecoveryProductDto> createProduct(@RequestBody CreateProductDto productDto) {
+    public ResponseEntity<RecoveryProductDto> createProduct(@RequestBody @Valid CreateProductDto productDto) {
         return new ResponseEntity<>(productService.createProduct(productDto), HttpStatus.CREATED);
     }
 
     @PostMapping({"/{productId}/variation"})
-    public ResponseEntity<RecoveryProductDto> createProductVariation(@PathVariable Long productId, @RequestBody CreateProductVariationDto createProductVariationDto) {
+    public ResponseEntity<RecoveryProductDto> createProductVariation(@PathVariable Long productId, @RequestBody @Valid CreateProductVariationDto createProductVariationDto) {
         return new ResponseEntity<>(productService.createProductVariation(productId, createProductVariationDto), HttpStatus.OK);
     }
 
