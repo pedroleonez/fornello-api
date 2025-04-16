@@ -9,6 +9,9 @@ import pedroleonez.fornello.api.dtos.output.product.RecoveryProductDto;
 import pedroleonez.fornello.api.entities.Product;
 import pedroleonez.fornello.api.entities.ProductVariation;
 import pedroleonez.fornello.api.enums.Category;
+import pedroleonez.fornello.api.exceptions.ProductNotFoundException;
+import pedroleonez.fornello.api.exceptions.ProductVariationNotFoundException;
+import pedroleonez.fornello.api.exceptions.ProductVariationUnavailableException;
 import pedroleonez.fornello.api.mappers.ProductMapper;
 import pedroleonez.fornello.api.repositories.ProductRepository;
 import pedroleonez.fornello.api.repositories.ProductVariationRepository;
@@ -35,7 +38,7 @@ public class ProductService {
         using ProductMapper to map each element in the list.
          */
         List<ProductVariation> productVariations =  createProductDto.productVariations().stream()
-                .map(productVariationDto -> productMapper.mapCreateProductVariationDtoToProductVariation(productVariationDto))
+                .map(productMapper::mapCreateProductVariationDtoToProductVariation)
                 .toList();
 
         // creates a product using the data from the DTO
@@ -51,7 +54,7 @@ public class ProductService {
         if the product has available = false, by default all product variations must also have available set to false, because it wouldn't make sense for the product to be unavailable while its variations are available
          */
         if (!product.isAvailable() && product.getProductVariations().stream().anyMatch(ProductVariation::isAvailable)) {
-            throw new RuntimeException("A variação de tamanho não pode estar disponível se o produto estiver indisponível.");
+            throw new ProductVariationUnavailableException();
         }
 
         // links each product variation to the product
@@ -67,7 +70,7 @@ public class ProductService {
     // create ProductVariation method
     public RecoveryProductDto createProductVariation(Long productId, CreateProductVariationDto createProductVariationDto) {
 
-        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Produto não encontrado."));
+        Product product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
 
         // converts the product variation creation DTO to a ProductVariation entity
         ProductVariation productVariation = productMapper.mapCreateProductVariationDtoToProductVariation(createProductVariationDto);
@@ -90,13 +93,13 @@ public class ProductService {
         List<Product> products = productRepository.findAll();
 
         // returning and mapping the products to a list of RecoveryProductDto type
-        return products.stream().map(product -> productMapper.mapProductToRecoveryProductDto(product)).toList();
+        return products.stream().map(productMapper::mapProductToRecoveryProductDto).toList();
     }
 
     // return product by id method
     public RecoveryProductDto getProductById(Long productId) {
         // searches for a product saved in the database
-        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Produto não encontrado."));
+        Product product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
 
         // returning and mapping the products to RecoveryProductDto type
         return productMapper.mapProductToRecoveryProductDto(product);
@@ -105,7 +108,7 @@ public class ProductService {
     // updates a product (without updating its variations)
     public RecoveryProductDto updateProductPart(Long productId, UpdateProductDto updateProductDto) {
         // searches for a product saved in the database
-        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Produto não encontrado."));
+        Product product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
 
         /*
         here we have a sequence of if statements that serves as a form of defensive programming: it only changes the value if some value was passed in the Json
@@ -134,7 +137,7 @@ public class ProductService {
     // updating a product variation method
     public RecoveryProductDto updateProductVariation(Long productId, Long productVariationId, UpdateProductVariationDto updateProductVariationDto) {
         // checks if the product exists
-        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Produto não encontrado."));
+        Product product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
 
         /*
         searches for the product variation (by id) in the list of variations of the product that is already saved in the database
@@ -142,7 +145,7 @@ public class ProductService {
         ProductVariation productVariation = product.getProductVariations().stream()
                 .filter(productVariationInProduct -> productVariationInProduct.getId().equals(productVariationId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Variação de produto não encontrada."));
+                .orElseThrow(ProductVariationNotFoundException::new);
 
         if (updateProductVariationDto.sizeName() != null) {
             productVariation.setSizeName(updateProductVariationDto.sizeName());
@@ -155,7 +158,7 @@ public class ProductService {
             if the product has available = false, by default the new added variation must also have available = false, because it wouldn't make sense for the product to be unavailable while the variation of that product is available
             */
             if (updateProductVariationDto.available() && !productVariation.getProduct().isAvailable()) {
-                throw new RuntimeException("A variação de tamanho não pode estar disponível se o produto estiver indisponível.");
+                throw new ProductVariationUnavailableException();
             }
             productVariation.setAvailable(updateProductVariationDto.available());
         }
@@ -174,7 +177,7 @@ public class ProductService {
     public void deleteProductId(Long productId) {
         // checks if the product exists
         if (!productRepository.existsById(productId)) {
-            throw new RuntimeException("Produto não encontrado.");
+            throw new ProductNotFoundException();
         }
         // deletes a product from the database
         productRepository.deleteById(productId);
@@ -185,7 +188,7 @@ public class ProductService {
         // checks if the product variation exists for the product in question
         ProductVariation productVariation = productVariationRepository
                 .findByProductIdAndProductVariationId(productId, productVariationId)
-                .orElseThrow(() -> new RuntimeException("Variação de produto não encontrada para o produto em questão."));
+                .orElseThrow(ProductVariationNotFoundException::new);
 
         // deletes the product variation from the database
         productVariationRepository.deleteById(productVariation.getId());
