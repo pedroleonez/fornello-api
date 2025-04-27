@@ -25,5 +25,7 @@ public interface ProductMapper {
     @Named("mapProductVariationToRecoveryProductVariationDto")
     RecoveryProductVariationDto mapProductVariationToRecoveryProductVariationDto(ProductVariation productVariation);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "product", ignore = true)
     ProductVariation mapCreateProductVariationDtoToProductVariation(CreateProductVariationDto createProductVariationDto);
 }
