@@ -17,7 +17,7 @@ import pedroleonez.fornello.api.enums.RoleName;
 import pedroleonez.fornello.api.services.UserService;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;

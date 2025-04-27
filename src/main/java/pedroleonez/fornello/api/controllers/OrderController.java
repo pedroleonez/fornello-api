@@ -15,7 +15,7 @@ import pedroleonez.fornello.api.dtos.output.order.RecoveryOrderDto;
 import pedroleonez.fornello.api.services.OrderService;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;
@@ -37,8 +37,8 @@ public class OrderController {
     @GetMapping("/status/{statusName}")
     public ResponseEntity<Page<RecoveryOrderDto>> getOrderByStatus(
             @PageableDefault(size = 8)
-            @SortDefault.SortDefaults({ @SortDefault(sort = "createdDate", direction = Sort.Direction.DESC), //Critério de ordenação
-                     @SortDefault(sort = "id", direction = Sort.Direction.ASC)}) //Critério de desempate
+            @SortDefault.SortDefaults({ @SortDefault(sort = "createdDate", direction = Sort.Direction.DESC),
+                     @SortDefault(sort = "id", direction = Sort.Direction.ASC)})
             Pageable pageable,
             @PathVariable String statusName,
             @RequestHeader("Authorization") String token
@@ -55,8 +55,8 @@ public class OrderController {
     public ResponseEntity<Page<RecoveryOrderDto>> getOrders(
             @PageableDefault(size = 8)
             @SortDefault.SortDefaults({
-                    @SortDefault(sort = "createdDate", direction = Sort.Direction.DESC), //Critério de ordenação
-                    @SortDefault(sort = "id", direction = Sort.Direction.ASC)}) //Critério de desempate
+                    @SortDefault(sort = "createdDate", direction = Sort.Direction.DESC),
+                    @SortDefault(sort = "id", direction = Sort.Direction.ASC)})
             Pageable pageable,
             @RequestHeader("Authorization") String token
     ) {

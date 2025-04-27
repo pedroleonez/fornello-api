@@ -28,48 +28,48 @@ public class SecurityConfiguration {
     private static final String ROLE_ADMINISTRATOR = "ADMINISTRATOR";
 
     public static final String[] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
-            "/users/login",
-            "/users/customers"
+            "/api/users/login",
+            "/api/users/customers"
     };
 
     public static final String[] ENDPOINTS_WITH_AUTHENTICATION_REQUIRED_TO_GET_STATUS = {
-            "/products",
-            "/products/{productId}",
-            "/products/category/{categoryName}",
-            "/products/search",
-            "/orders",
-            "/orders/{orderId}",
-            "/orders/status/{statusName}"
+            "/api/products",
+            "/api/products/{productId}",
+            "/api/products/category/{categoryName}",
+            "/api/products/search",
+            "/api/orders",
+            "/api/orders/{orderId}",
+            "/api/orders/status/{statusName}"
     };
 
     private static final String[] ENDPOINTS_WITH_AUTHENTICATION_REQUIRED_TO_POST_STATUS = {
-            "/orders"
+            "/api/orders"
     };
 
     private static final String[] ENDPOINTS_AVAILABLE_FOR_ADMIN_ONLY_TO_GET_STATUS = {
-            "/users",
-            "/users/{userId}"
+            "/api/users",
+            "/api/users/{userId}"
     };
 
     private static final String[] ENDPOINTS_AVAILABLE_FOR_ADMIN_ONLY_TO_POST_STATUS = {
-            "/products",
-            "/products/{productId}/variation"
+            "/api/products",
+            "/api/products/{productId}/variation"
     };
 
     private static final String[] ENDPOINTS_AVAILABLE_FOR_ADMIN_ONLY_TO_PUT_STATUS = {
-            "/{productId}/variation/{productVariationId}"
+            "/api/{productId}/variation/{productVariationId}"
     };
 
     private static final String[] ENDPOINTS_AVAILABLE_FOR_ADMIN_ONLY_TO_PATCH_STATUS = {
-            "/products/{productId}",
-            "/orders/{orderId}/status"
+            "/api/products/{productId}",
+            "/api/orders/{orderId}/status"
     };
 
     private static final String[] ENDPOINTS_AVAILABLE_FOR_ADMIN_ONLY_TO_DELETE_STATUS = {
-            "/users/{userId}",
-            "/products/{productId}",
-            "/products/{productId}/variation/{productVariationId}",
-            "/orders/{productId}"
+            "/api/users/{userId}",
+            "/api/products/{productId}",
+            "/api/products/{productId}/variation/{productVariationId}",
+            "/api/orders/{productId}"
     };
 
     @Bean
