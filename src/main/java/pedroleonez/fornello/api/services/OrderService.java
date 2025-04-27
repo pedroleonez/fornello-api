@@ -1,6 +1,5 @@
 package pedroleonez.fornello.api.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -47,27 +46,21 @@ public class OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal amount = BigDecimal.ZERO;
 
-        // Loop através de cada item do pedido recebido
         for(CreateOrderItemDto createOrderItemDto : createOrderDto.orderItems()) {
-            // Verifica se a variação de produto existe
             ProductVariation productVariation = productVariationRepository
                     .findByProductIdAndProductVariationId(createOrderItemDto.productId(), createOrderItemDto.productVariationId())
                     .orElseThrow(ProductVariationNotFoundException::new);
 
-            // Multiplica a quantidade de itens pelo preço e adiciona ao valor total
             amount = amount.add(productVariation.getPrice().multiply(new BigDecimal(createOrderItemDto.quantity())));
 
-            // Cria um item através dos dados do DTO
             OrderItem orderItem = OrderItem.builder()
                     .quantity(createOrderItemDto.quantity())
                     .productVariation(productVariation)
                     .build();
 
-            // Adiciona o item criado a lista de itens
             orderItems.add(orderItem);
         }
 
-        // Cria os dados de entrega através dos dados do DTO
         DeliveryData deliveryData = DeliveryData.builder()
                 .receiverName(createOrderDto.deliveryData().receiverName())
                 .address(createOrderDto.deliveryData().address())
@@ -80,10 +73,8 @@ public class OrderService {
                 .phoneNumber(createOrderDto.deliveryData().phone_number())
                 .build();
 
-        // Obtém usuário através do token
         User user = getUser(token);
 
-        // Cria o pedido com todos os itens associados a ele
         Order order = Order.builder()
                 .user(user)
                 .paymentMethod(PaymentMethod.valueOf(createOrderDto.paymentMethod().toUpperCase()))
@@ -92,10 +83,7 @@ public class OrderService {
                 .deliveryData(deliveryData)
                 .build();
 
-        // Associa cada item ao pedido
         orderItems.forEach(orderItem -> orderItem.setOrder(order));
-
-        // Associa pedido aos dados de entrega
         deliveryData.setOrder(order);
 
         return orderMapper.mapOrderToRecoveryOrderDto(orderRepository.save(order));
@@ -104,7 +92,6 @@ public class OrderService {
     public RecoveryOrderDto getOrderById(String token, Long orderId) {
         User user = getUser(token);
 
-        // Se tiver role de customer deve retornar apena o pedido que pertence ao usuário atual
         if (user.getRoles().stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_CUSTOMER))) {
             return orderMapper.mapOrderToRecoveryOrderDto(orderRepository
                     .findByOrderIdAndUserId(orderId, user.getId())
@@ -117,25 +104,23 @@ public class OrderService {
     public Page<RecoveryOrderDto> getOrders(String token, Pageable pageable) {
         User user = getUser(token);
 
-        // Se tiver role de customer deve retornar apenas os pedidos que pertencem ao usuário atual
         if (user.getRoles().stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_CUSTOMER))) {
             Page<Order> orderPage = orderRepository.findAllByUserId(user.getId(), pageable);
-            return orderPage.map(order -> orderMapper.mapOrderToRecoveryOrderDto(order));
+            return orderPage.map(orderMapper::mapOrderToRecoveryOrderDto);
         }
         Page<Order> orderPage = orderRepository.findAll(pageable);
-        return orderPage.map(order -> orderMapper.mapOrderToRecoveryOrderDto(order));
+        return orderPage.map(orderMapper::mapOrderToRecoveryOrderDto);
     }
 
     public Page<RecoveryOrderDto> getOrderByStatus(String statusName, String token, Pageable pageable) {
         User user = getUser(token);
 
-        // Se tiver role de customer deve retornar apenas os pedidos que pertencem ao usuário atual.
         if (user.getRoles().stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_CUSTOMER))) {
             Page<Order> orderPage = orderRepository.findOrderByStatusAndUser(Status.valueOf(statusName.toUpperCase()), user.getId(), pageable);
-            return orderPage.map(order -> orderMapper.mapOrderToRecoveryOrderDto(order));
+            return orderPage.map(orderMapper::mapOrderToRecoveryOrderDto);
         }
         Page<Order> orderPage = orderRepository.findByStatus(Status.valueOf(statusName.toUpperCase()), pageable);
-        return orderPage.map(order -> orderMapper.mapOrderToRecoveryOrderDto(order));
+        return orderPage.map(orderMapper::mapOrderToRecoveryOrderDto);
     }
 
     public RecoveryOrderDto changeOrderStatus(Long orderId, UpdateStatusOrderDto updateStatusOrderDto) {
